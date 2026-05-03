@@ -39,3 +39,16 @@ def get_upcoming_birthdays(db: Session):
         if today <= bday_this_year <= end_date:
             upcoming.append(contact)
     return upcoming
+
+def update_contact(db: Session, contact_id: int, body: schemas.ContactBase):
+    db_contact = db.query(models.Contact).filter(models.Contact.id == contact_id).first()
+    if db_contact:
+        db_contact.first_name = body.first_name
+        db_contact.last_name = body.last_name
+        db_contact.email = body.email
+        db_contact.phone = body.phone
+        db_contact.birthday = body.birthday
+        db_contact.additional_data = body.additional_data
+        db.commit()
+        db.refresh(db_contact)
+    return db_contact

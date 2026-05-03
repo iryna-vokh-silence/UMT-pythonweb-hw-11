@@ -4,7 +4,6 @@ from typing import List
 import models, schemas, crud
 from database import engine, get_db
 
-# Створюємо таблиці в БД
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Contacts API")
@@ -17,6 +16,7 @@ def create(contact: schemas.ContactBase, db: Session = Depends(get_db)):
 def read_all(name: str = None, last_name: str = None, email: str = None, db: Session = Depends(get_db)):
     return crud.get_contacts(db, name, last_name, email)
 
+# ВАЖЛИВО: цей маршрут має бути ВИЩЕ за /contacts/{contact_id}
 @app.get("/contacts/birthdays", response_model=List[schemas.ContactResponse])
 def birthdays(db: Session = Depends(get_db)):
     return crud.get_upcoming_birthdays(db)
@@ -28,7 +28,15 @@ def read_one(contact_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Not found")
     return contact
 
+# НОВИЙ МАРШРУТ: оновлення контакту
+@app.put("/contacts/{contact_id}", response_model=schemas.ContactResponse)
+def update(contact_id: int, body: schemas.ContactBase, db: Session = Depends(get_db)):
+    contact = crud.update_contact(db, contact_id, body)
+    if not contact:
+        raise HTTPException(status_code=404, detail="Not found")
+    return contact
+
 @app.delete("/contacts/{contact_id}")
 def delete(contact_id: int, db: Session = Depends(get_db)):
     crud.delete_contact(db, contact_id)
-    return {"status": "deleted"}
+    return {"status": "deleted"}і
