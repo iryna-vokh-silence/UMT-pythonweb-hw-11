@@ -39,4 +39,4 @@ def update(contact_id: int, body: schemas.ContactBase, db: Session = Depends(get
 @app.delete("/contacts/{contact_id}")
 def delete(contact_id: int, db: Session = Depends(get_db)):
     crud.delete_contact(db, contact_id)
-    return {"status": "deleted"}і
+    return {"status": "deleted"}
