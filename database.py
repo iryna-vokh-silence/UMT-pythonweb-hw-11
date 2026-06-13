@@ -1,16 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from config import settings
 
-# Підключення до Docker Postgres (пароль 54321)
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:54321@localhost:5432/contacts_db"
-
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-# Функція для отримання сесії БД
+
 def get_db():
     db = SessionLocal()
     try:
